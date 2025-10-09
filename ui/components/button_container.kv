@@ -1,0 +1,11 @@
+<ButtonContainer@MDBoxLayout>:
+    size_hint_x: None
+    width: dp(110)
+    orientation: "horizontal"
+    padding: dp(2)
+    canvas.before:
+        Color:
+            rgba: 0,0,0,.2
+        Line:
+            width: dp(.5)
+            rounded_rectangle: self.pos[0], self.pos[1], self.size[0], self.size[1], 4

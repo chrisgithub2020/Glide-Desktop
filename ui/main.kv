@@ -1,0 +1,15 @@
+#: kivy 2.3.1
+#: import get_color_from_hex kivy.utils.get_color_from_hex
+
+#: include ./ui/components/toolbar.kv
+#: include ./ui/components/drawing_area.kv
+#: include ./ui/components/statusbar.kv
+
+
+MDBoxLayout:
+    orientation: "vertical"
+    md_bg_color: get_color_from_hex("#f0f2f0")
+    ToolBar:
+    DrawingArea:
+        id: drawing_area
+    StatusBar:

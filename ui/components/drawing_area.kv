@@ -1,0 +1,16 @@
+<DrawingArea>:
+    padding: dp(3)
+
+    MDLabel:
+        canvas.before:
+            Color:
+                rgba: 0,0,0,.2
+            Line:
+                width: dp(.65)
+                rounded_rectangle: self.pos[0], self.pos[1], self.size[0], self.size[1], 4
+
+        on_touch_down: root.touch_down(args[1])
+        on_touch_move: root.touch_move(args[1])
+        on_touch_up: root.touch_up(args[1])
+        
+    

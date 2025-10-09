@@ -1,0 +1,96 @@
+#: include ./ui/components/button.kv
+#: include ./ui/components/button_container.kv
+
+<ToolBar@MDBoxLayout>:
+    id: title_bar
+    adaptive_height: True
+    size_hint_x: 1
+    size_hint_y: 0.07
+    orientation: "horizontal"
+    md_bg_color: 0,0,0,0
+    padding: dp(3)
+    
+    MDRectangleFlatIconButton:
+        size_hint_y: 1
+        icon: "card-plus-outline"
+        text: "New"
+        line_color: 0,0,0,.2
+        text_color: "black"
+        icon_color: self.text_color
+        md_bg_color: get_color_from_hex("#FFFFFF")
+
+    MDBoxLayout:
+        orientation: "horizontal"
+        size_hint_x: 1  
+        spacing: dp(5)
+        padding: dp(10), 0
+
+        ButtonContainer:
+                    
+            CustomButton:
+                elevation: 10
+                size_hint_y: 1
+                size_hint_x: .5
+                icon: "undo-variant"
+                md_bg_color: get_color_from_hex("#FFFFFF")
+
+            CustomButton:
+                elevation: 10
+                size_hint_y: 1
+                size_hint_x: .5
+                icon: "redo-variant"
+                md_bg_color: get_color_from_hex("#FFFFFF")
+
+        
+        ButtonContainer:
+            width: dp(200)
+            CustomButton:
+                size_hint_y: 1
+                size_hint_x: .5
+                icon: "eraser"
+                on_release: app.active_tool = "eraser"
+                md_bg_color: get_color_from_hex("#FFFFFF") if app.active_tool != "eraser" else [255,255,255,0]
+            
+            CustomButton:
+                size_hint_y: 1
+                size_hint_x: .5
+                icon: "draw-pen"
+                on_press: app.open_dropdown("pencil", self)
+                md_bg_color: get_color_from_hex("#FFFFFF") if app.active_tool != "pencil" else [255,255,255,0]
+
+            CustomButton:
+                size_hint_y: 1
+                size_hint_x: .5
+                id: shapes_btn
+                icon: "vector-line"
+                on_press: app.open_dropdown("shape", self)
+                md_bg_color: get_color_from_hex("#FFFFFF") if app.active_tool != "shape" else [255,255,255,0]
+            
+            CustomButton:
+                size_hint_y: 1
+                size_hint_x: .5
+                icon: "format-text"
+                on_release: app.active_tool = "text"
+                md_bg_color: get_color_from_hex("#FFFFFF") if app.active_tool != "text" else [255,255,255,0]
+
+            
+
+        ButtonContainer:
+            CustomButton:
+                size_hint_y: 1
+                size_hint_x: .5
+                icon: "format-color-fill"
+                md_bg_color: get_color_from_hex("#FFFFFF")
+                on_press: app.open_color_picker()
+
+            CustomButton:
+                size_hint_y: 1
+                size_hint_x: .5
+                icon: "file-image"
+                md_bg_color: get_color_from_hex("#FFFFFF")
+            
+            CustomButton:
+                size_hint_y: 1
+                size_hint_x: .5
+                icon: "sticker-text-outline"
+                md_bg_color: get_color_from_hex("#FFFFFF")

@@ -1,0 +1,35 @@
+#: include ./ui/components/button.kv\
+
+<StatusBar@MDBoxLayout>:
+    size_hint_y: .065
+    padding: dp(2.5)
+    MDBoxLayout:
+        MDIcon:
+            padding: dp(2)
+            icon: app.statusbar_icon
+
+        MDLabel:
+            text: app.statusbar_tool
+
+    MDBoxLayout:
+        MDLabel:
+            text: "x "+str(int(app.cursor_pos_x))
+
+        MDLabel:
+            text: "y "+str(int(app.cursor_pos_y))
+
+    MDBoxLayout:
+        CustomButton:
+            icon: "minus"
+            on_release: app.zoom_value -= 1
+        
+        MDSlider:
+            min: 0
+            max: 100
+            value: app.zoom_value
+            step: 1
+            hint: True
+
+        CustomButton:
+            icon: "plus"
+            on_release: app.zoom_value += 1
