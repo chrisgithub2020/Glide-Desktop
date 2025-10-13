@@ -2,34 +2,45 @@ from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivymd.uix.pickers import MDColorPicker
 from typing import Union
-from kivy.properties import BooleanProperty, StringProperty, NumericProperty
+from kivy.properties import BooleanProperty, StringProperty, NumericProperty, ListProperty
 from kivymd.uix.menu import MDDropdownMenu
 from kivy.core.window import Window
+from kivy.utils import get_color_from_hex
+from kivy.graphics import Line, Color
 
 ## custom widgets
 from components.button import CustomButton
 from components.drawing_area import DrawingArea
 from kivymd.uix.widget import MDWidget
 
-
+   
 
 class MainApp(MDApp):
     is_maximized = BooleanProperty(False)
     is_in_drawing_area = BooleanProperty(False)
+    is_dropdown_opened = BooleanProperty(False)
+    is_eraser_drawn = BooleanProperty(False)
+
     active_tool = StringProperty("pencil")
     statusbar_icon = StringProperty("draw-pen")
     statusbar_tool = StringProperty("Freehand")
     cursor_pos_x = NumericProperty(0)
     cursor_pos_y = NumericProperty(0)
     zoom_value = NumericProperty(50)
+    dotted_line = BooleanProperty(False) ## everything is in dotted lines
+    color_fill = BooleanProperty(False)##shapes are filled with colors
+    pen_color = ListProperty([0,0,0,1])
 
+    window_height = NumericProperty(Window.height)
+    window_width = NumericProperty(Window.width)
+    
     def build(self):
         Window.bind(mouse_pos=self.update_cur_pos)
+        Window.bind(on_resize=self.on_resize_window)
         self.title = "Glide"
         self.icon = "./ui/images/icon.png"
-        self.color_picker = MDColorPicker()
+        self.color_picker = MDColorPicker(size_hint=(0.4, 0.8))
         self.shapes_menu_item = [
-                {"text": "Line","leading_icon":"vector-line", "on_release": lambda: self.menu_callback("Line", "vector-line")},
                 {"text": "Triangle", "leading_icon": "triangle-outline", "on_release": lambda: self.menu_callback("Triangle", "triangle-outline")},
                 {"text": "Square", "leading_icon": "square-outline","on_release": lambda: self.menu_callback("Square", "square-outline")},
                 {"text": "Rounded Square", "leading_icon": "square-rounded-outline", "on_release": lambda: self.menu_callback("Rounded Square", "square-rounded-outline")},
@@ -38,8 +49,8 @@ class MainApp(MDApp):
         ]
 
         self.lines_menu_items = [
+            {"text": "Line","leading_icon":"vector-line", "on_release": lambda: self.menu_callback("Line", "vector-line")},
             {"text": "Freehand","leading_icon":"draw-pen", "on_release": lambda: self.menu_callback("Freehand", "draw-pen")},
-            {"text": "Dotted","leading_icon":"dots-horizontal", "on_release": lambda: self.menu_callback("Dotted Line", "dots-horizontal")},
             {"text": "Bezier","leading_icon":"vector-bezier", "on_release": lambda: self.menu_callback("Bezier", "vector-bezier")},
         ]
         self.shapes_dropdown = MDDropdownMenu(items=self.shapes_menu_item, id="shapes_dropdown")
@@ -48,6 +59,7 @@ class MainApp(MDApp):
     
     def open_dropdown(self, dropdown_type: str, instance):
         self.active_tool = dropdown_type
+        self.is_dropdown_opened = True
         if dropdown_type == "shape":
             self.shapes_dropdown.caller = instance
             self.shapes_dropdown.open()
@@ -65,37 +77,76 @@ class MainApp(MDApp):
         self.shapes_dropdown.dismiss()
         self.lines_dropdown.dismiss()
 
-    def open_color_picker(self):
+        self.is_dropdown_opened = False
+
+    def open_color_picker(self, button):
         """Minimize window"""
         self.color_picker.open()
+        self.color_picker.attach_to = button
         self.color_picker.bind(
             on_select_color=self.set_color,
             on_release=self.get_selected_color,
         )
 
-    def set_color(self,instance: MDColorPicker, color: list):
+    def set_color(self,instance: MDColorPicker, selected_color: list):
         """Maximize or restore window"""
-        print(color)
+        self.pen_color = selected_color
 
     def get_selected_color(self, instance: MDColorPicker, color_format: str, selected_color: Union[list, str]):
         """Implement dragging of window"""
         print(color_format, selected_color)
+        if color_format == "HEX":
+            self.pen_color = get_color_from_hex(selected_color)
+        else:
+            self.pen_color = selected_color
         instance.dismiss()
 
     def update_cur_pos(self, window,  pos):
         """
             Do something when cursor is in drawing area
         """ 
-        if self.root.ids["drawing_area"].collide_point(pos[0], pos[1]) and not (self.shapes_dropdown.collide_point(pos[0], pos[1]) or self.lines_dropdown.collide_point(pos[0], pos[1])):
-            if not self.is_in_drawing_area:
+        if self.root.ids["drawing_area"].collide_point(pos[0], pos[1]) and not self.is_dropdown_opened:
+            if not self.is_in_drawing_area and self.active_tool != "eraser":
                 Window.set_system_cursor("crosshair")
                 self.is_in_drawing_area = True
+
+            if self.active_tool == "eraser":
+                with self.root.ids["drawing_area"].canvas:
+                        Color(0,0,0,1)
+                        Line(ellipse=(pos[0], pos[1], 25,25), width=1.5)
+                # if not self.is_eraser_drawn:
+                #     with self.root.ids["drawing_area"].canvas:
+                #         Color(0,0,0,1)
+                #         self.eraser = Line(ellipse=(pos[0], pos[1], 25,25), width=1.5)
+                #         Line(ellipse=(pos[0], pos[1], 25,25), width=1.5)
+                #     self.is_eraser_drawn = True
+                # else:
+                #     self.eraser.ellipse = (pos[0], pos[1], 25, 25)
+
             self.cursor_pos_x = pos[0]
             self.cursor_pos_y = pos[1]
         else:
             if self.is_in_drawing_area:
                 Window.set_system_cursor("arrow")
                 self.is_in_drawing_area = False
+
+    def on_resize_window(self, window, width, height):
+        ## getting scale factor
+        x_scale = width/self.window_width
+        y_scale = height/self.window_height
+
+        ##scaling content
+        self.root.ids["drawing_area"].scale(x_scale, y_scale)
+
+        self.window_height = height
+        self.window_width = width
+
+    def undo(self):
+        self.root.ids["drawing_area"].undo()
+
+    def redo(self):
+        self.root.ids["drawing_area"].redo()
+
 
 
 

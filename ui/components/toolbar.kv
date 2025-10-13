@@ -32,6 +32,7 @@
                 size_hint_y: 1
                 size_hint_x: .5
                 icon: "undo-variant"
+                on_release: app.redo()
                 md_bg_color: get_color_from_hex("#FFFFFF")
 
             CustomButton:
@@ -39,6 +40,7 @@
                 size_hint_y: 1
                 size_hint_x: .5
                 icon: "redo-variant"
+                on_release: app.undo()
                 md_bg_color: get_color_from_hex("#FFFFFF")
 
         
@@ -48,7 +50,7 @@
                 size_hint_y: 1
                 size_hint_x: .5
                 icon: "eraser"
-                on_release: app.active_tool = "eraser"
+                on_release: app.active_tool, app.statusbar_tool, app.statusbar_icon = "eraser", "Eraser", "eraser"
                 md_bg_color: get_color_from_hex("#FFFFFF") if app.active_tool != "eraser" else [255,255,255,0]
             
             CustomButton:
@@ -73,7 +75,21 @@
                 on_release: app.active_tool = "text"
                 md_bg_color: get_color_from_hex("#FFFFFF") if app.active_tool != "text" else [255,255,255,0]
 
+        ButtonContainer:
+            width: dp(100)
+            CustomButton:
+                size_hint_y: 1
+                size_hint_x: .5
+                icon: "invert-colors"
+                on_release: app.color_fill = True if not app.color_fill else False
+                md_bg_color: get_color_from_hex("#FFFFFF") if not app.color_fill else [255,255,255,0]
             
+            CustomButton:
+                size_hint_y: 1
+                size_hint_x: .5
+                icon: "dots-square"
+                on_release: app.dotted_line = True if not app.dotted_line else False
+                md_bg_color: get_color_from_hex("#FFFFFF") if not app.dotted_line else [255,255,255,0]
 
         ButtonContainer:
             CustomButton:
@@ -81,7 +97,7 @@
                 size_hint_x: .5
                 icon: "format-color-fill"
                 md_bg_color: get_color_from_hex("#FFFFFF")
-                on_press: app.open_color_picker()
+                on_press: app.open_color_picker(self)
 
             CustomButton:
                 size_hint_y: 1
@@ -89,8 +105,3 @@
                 icon: "file-image"
                 md_bg_color: get_color_from_hex("#FFFFFF")
             
-            CustomButton:
-                size_hint_y: 1
-                size_hint_x: .5
-                icon: "sticker-text-outline"
-                md_bg_color: get_color_from_hex("#FFFFFF")
