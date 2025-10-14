@@ -111,17 +111,14 @@ class MainApp(MDApp):
                 self.is_in_drawing_area = True
 
             if self.active_tool == "eraser":
-                with self.root.ids["drawing_area"].canvas:
+                if not self.is_eraser_drawn:
+                    Window.show_cursor = False
+                    with self.root.ids["drawing_area"].canvas.after:
                         Color(0,0,0,1)
-                        Line(ellipse=(pos[0], pos[1], 25,25), width=1.5)
-                # if not self.is_eraser_drawn:
-                #     with self.root.ids["drawing_area"].canvas:
-                #         Color(0,0,0,1)
-                #         self.eraser = Line(ellipse=(pos[0], pos[1], 25,25), width=1.5)
-                #         Line(ellipse=(pos[0], pos[1], 25,25), width=1.5)
-                #     self.is_eraser_drawn = True
-                # else:
-                #     self.eraser.ellipse = (pos[0], pos[1], 25, 25)
+                        self.eraser = Line(ellipse=(pos[0], pos[1], 25,25), width=1.5)
+                    self.is_eraser_drawn = True
+                else:
+                    self.eraser.ellipse = (pos[0], pos[1], 25, 25)
 
             self.cursor_pos_x = pos[0]
             self.cursor_pos_y = pos[1]
@@ -129,6 +126,11 @@ class MainApp(MDApp):
             if self.is_in_drawing_area:
                 Window.set_system_cursor("arrow")
                 self.is_in_drawing_area = False
+
+            if self.is_eraser_drawn:
+                self.root.ids["drawing_area"].canvas.after.remove(self.eraser)
+                self.is_eraser_drawn = False
+                Window.show_cursor = True
 
     def on_resize_window(self, window, width, height):
         ## getting scale factor

@@ -106,7 +106,7 @@ class DrawingArea(MDBoxLayout):
             self.drawing_instructions.append(instruction)
 
     def erase(self, touch):
-        touch.ud["eraser"] = Line(width=5, points=[self.init_x, self.init_y, self.init_x, self.init_y])
+        touch.ud["eraser"] = Line(width=7, points=[self.init_x, self.init_y, self.init_x, self.init_y])
         self.drawing_instructions.append(touch.ud["eraser"])
 
     def draw_rectangle(self, width, height):
