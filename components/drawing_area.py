@@ -2,11 +2,12 @@ from kivymd.uix.label import MDLabel
 from kivy.core.window import Window
 from typing import Any
 from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.floatlayout import MDFloatLayout
 from kivy.properties import BooleanProperty, NumericProperty, StringProperty, ListProperty
 from kivy.graphics import Color, Rectangle, Line, Triangle, RoundedRectangle, Ellipse
 from kivy.utils import get_color_from_hex
 
-class DrawingArea(MDBoxLayout):
+class DrawingArea(MDFloatLayout):
     init_x = NumericProperty(0)
     init_y = NumericProperty(0)
     scale = NumericProperty(1)

@@ -4,6 +4,7 @@ from kivymd.uix.pickers import MDColorPicker
 from typing import Union
 from kivy.properties import BooleanProperty, StringProperty, NumericProperty, ListProperty
 from kivymd.uix.menu import MDDropdownMenu
+from plyer import filechooser
 from kivy.core.window import Window
 from kivy.utils import get_color_from_hex
 from kivy.graphics import Line, Color
@@ -11,7 +12,9 @@ from kivy.graphics import Line, Color
 ## custom widgets
 from components.button import CustomButton
 from components.drawing_area import DrawingArea
-from kivymd.uix.widget import MDWidget
+from components.text import CustomTextWidget
+from components.image_widget import CustomImageWidget
+
 
    
 
@@ -87,6 +90,16 @@ class MainApp(MDApp):
             on_select_color=self.set_color,
             on_release=self.get_selected_color,
         )
+
+    def file_manager_open(self, instance):
+        image_filters = ["*.jpg", "*.jpeg", "*.png", "*.gif", "*.bmp", "*.tiff", "*.webp"]
+        selected_files = filechooser.open_file(title="Choose an Image", multiple=True, filters=image_filters) # type: ignore
+
+        if len(selected_files) > 0:
+            for file in selected_files:
+                image = CustomImageWidget(source=file)
+                self.root.ids["drawing_area"].add_widget(image)
+       
 
     def set_color(self,instance: MDColorPicker, selected_color: list):
         """Maximize or restore window"""
