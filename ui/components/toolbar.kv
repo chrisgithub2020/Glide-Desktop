@@ -72,7 +72,7 @@
                 size_hint_y: 1
                 size_hint_x: .5
                 icon: "format-text"
-                on_release: app.active_tool = "text"
+                on_release: app.active_tool, app.statusbar_tool, app.statusbar_icon = "text", "text", "format-text"
                 md_bg_color: get_color_from_hex("#FFFFFF") if app.active_tool != "text" else [255,255,255,0]
 
         ButtonContainer:

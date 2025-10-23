@@ -1,7 +1,7 @@
 from kivy.uix.behaviors import DragBehavior
-from kivymd.uix.fitimage import FitImage
+from kivy.uix.image import Image
+from kivy.properties import NumericProperty
 
 
-class CustomImageWidget(DragBehavior, FitImage):
-    size_hint=(None, None)
-    size=(100, 100)
+class CustomImageWidget(DragBehavior, Image):
+    pass

@@ -98,8 +98,7 @@ class MainApp(MDApp):
         if len(selected_files) > 0:
             for file in selected_files:
                 image = CustomImageWidget(source=file)
-                self.root.ids["drawing_area"].add_widget(image)
-       
+                self.root.ids["drawing_area"].children[0].add_widget(image)       
 
     def set_color(self,instance: MDColorPicker, selected_color: list):
         """Maximize or restore window"""
@@ -118,32 +117,45 @@ class MainApp(MDApp):
         """
             Do something when cursor is in drawing area
         """ 
+        ## is the cursor in the drawing area and no dropdown is open
         if self.root.ids["drawing_area"].collide_point(pos[0], pos[1]) and not self.is_dropdown_opened:
-            if not self.is_in_drawing_area and self.active_tool != "eraser":
+            ## draw a shape
+            if not self.is_in_drawing_area and self.active_tool != "eraser" and self.active_tool != "text":
                 Window.set_system_cursor("crosshair")
                 self.is_in_drawing_area = True
 
+            ## are we using eraser?
             if self.active_tool == "eraser":
                 if not self.is_eraser_drawn:
+                    ## draw eraser if not drawn
                     Window.show_cursor = False
                     with self.root.ids["drawing_area"].canvas.after:
                         Color(0,0,0,1)
                         self.eraser = Line(ellipse=(pos[0], pos[1], 25,25), width=1.5)
                     self.is_eraser_drawn = True
                 else:
+                    ## change position of eraser if drawn already
                     self.eraser.ellipse = (pos[0], pos[1], 25, 25)
+            ## lets insert text
+            elif self.active_tool == "text":
+                Window.set_system_cursor("ibeam")
 
+            ## update cursor position
             self.cursor_pos_x = pos[0]
             self.cursor_pos_y = pos[1]
         else:
             if self.is_in_drawing_area:
-                Window.set_system_cursor("arrow")
                 self.is_in_drawing_area = False
 
             if self.is_eraser_drawn:
+                ## remove the eraser
                 self.root.ids["drawing_area"].canvas.after.remove(self.eraser)
                 self.is_eraser_drawn = False
                 Window.show_cursor = True
+
+            ## bring back cursor to arrow
+            Window.set_system_cursor("arrow")
+
 
     def on_resize_window(self, window, width, height):
         ## getting scale factor

@@ -7,6 +7,8 @@ from kivy.properties import BooleanProperty, NumericProperty, StringProperty, Li
 from kivy.graphics import Color, Rectangle, Line, Triangle, RoundedRectangle, Ellipse
 from kivy.utils import get_color_from_hex
 
+from components.text import CustomTextWidget
+
 class DrawingArea(MDFloatLayout):
     init_x = NumericProperty(0)
     init_y = NumericProperty(0)
@@ -44,6 +46,11 @@ class DrawingArea(MDFloatLayout):
                         c = get_color_from_hex("#f0f2f0ff")
                         Color(c[0], c[1], c[2], c[3])
                         self.erase(touch=touch)
+            
+            if self.tool == "text":
+                text = CustomTextWidget((touch.x, touch.y))
+                self.add_widget(text)
+            
             return True
         
     
